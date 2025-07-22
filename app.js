@@ -3,8 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const authRouter = require("./routes/auth");
 const postRouter = require("./routes/post");
-const requestLogger = require("./utilities/requestLogger");
-const errorLogger = require("./utilities/errorLogger");
+const errorHandler = require("./utilities/errorHandler");
 const authMiddleware = require("./utilities/auth");
 const upload = require("./utilities/multer");
 const app = express();
@@ -16,7 +15,6 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(requestLogger);
 app.use(`/auth`, authRouter);
 app.use(`/posts`, postRouter);
 app.post(`/upload`, authMiddleware, upload.single("file"), (req, res) => {
@@ -37,7 +35,7 @@ app.all("*", (req, res) => {
   err.status = 404;
   throw err;
 });
-app.use(errorLogger);
+app.use(errorHandler);
 
 app.listen(process.env.PORT, () => {
   console.log(`app is listening at port ${process.env.PORT}`);
